@@ -1,6 +1,8 @@
 from app import create_app, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from flask_login import UserMixin
+
 """ User models """
 
 # Student Quiz Registrations Association Table
@@ -11,9 +13,10 @@ registrations = db.Table('registrations',
 
 
 # Student model
-class Student(db.Model):
+class Student(UserMixin, db.Model):
     __tablename__ = "students"
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(128), unique=True)
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
     quizes = db.relationship('Quiz', 
@@ -39,6 +42,7 @@ class Student(db.Model):
 class Examiner(db.Model):
     __tablename__ = "examiners"
     id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(128), unique=True)
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
     quizes = db.relationship('Quiz', backref='examiner')
