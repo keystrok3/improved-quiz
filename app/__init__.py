@@ -14,11 +14,17 @@ def create_app(config_name):
     db.init_app(app)
     
     """ Register blueprints """
+    
     # main blueprint
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint)
     
-    # authentication blueprint
+    # instructor blueprint
+    from .examiner import examiner as examiner_blueprint
+    app.register_blueprint(examiner_blueprint)
     
+    # authentication blueprint
+    from .auth import auth as auth_blueprint
+    app.register_blueprint(auth_blueprint)
     
     return app
