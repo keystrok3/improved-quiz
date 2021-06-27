@@ -1,4 +1,5 @@
 from app import create_app, db
+from werkzeug.security import generate_password_hash, check_password_hash
 
 """ User models """
 
@@ -6,6 +7,7 @@ from app import create_app, db
 registrations = db.Table('registrations', 
                          db.Column('student_id', db.Integer, db.ForeignKey('students.id')), 
                          db.Column('quiz_id', db.Integer, db.ForeignKey('quizes.id')))
+
 
 
 # Student model
@@ -19,6 +21,19 @@ class Student(db.Model):
                             backref=db.backref('students', lazy='dynamic'),
                             lazy='dynamic')
     
+    password_hash = db.Column(db.String(128))
+    
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+    
 
 # Examiner model
 class Examiner(db.Model):
@@ -27,6 +42,19 @@ class Examiner(db.Model):
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
     quizes = db.relationship('Quiz', backref='examiner')
+    
+    password_hash = db.Column(db.String(128))
+    
+    @property
+    def password(self):
+        raise AttributeError('password is not a readable attribute')
+    
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+        
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 # Quizes
 class Quiz(db.Model):
