@@ -2,6 +2,7 @@ from app import create_app, db
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_login import UserMixin
+from . import login_manager
 
 """ User models """
 
@@ -13,10 +14,12 @@ registrations = db.Table('registrations',
 
 # Abstract User model --- No table
 class User(UserMixin, db.Model):
-    __abstract__ = True
+    __tablename__ = "users"
+    id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), unique=True)
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
+    role = db.Column(db.String(64), db.CheckConstraint("role == 'student' or role == 'examiner'"))
     password_hash = db.Column(db.String(128))
     
     @property
@@ -34,6 +37,7 @@ class User(UserMixin, db.Model):
 class Student(User):
     __tablename__ = "students"
     id = db.Column(db.Integer, primary_key=True)
+    student_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     quizes = db.relationship('Quiz', 
                             secondary=registrations,
                             backref=db.backref('students', lazy='dynamic'),
@@ -44,6 +48,7 @@ class Student(User):
 class Examiner(User):
     __tablename__ = "examiners"
     id = db.Column(db.Integer, primary_key=True)
+    examiner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     examiner_quizes = db.relationship('Quiz', backref='examiner')
     
 # Quizes
@@ -72,9 +77,15 @@ class Question(db.Model):
 class StudentSolutions(db.Model):
     __tablename__ = 'studentsolutions'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer)
-    question_id = db.Column(db.Integer)
+    student_id = db.Column(db.Integer, db.ForeignKey('students.id'))
+    question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     solution = db.Column(db.String(64))
+    
+
+# User loader callback
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
     
 
 app = create_app('development')
