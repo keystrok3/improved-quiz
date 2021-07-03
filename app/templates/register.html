@@ -21,6 +21,17 @@
         <hr>
         <div class="row">
             <div class="col">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning show fade" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% if form.errors %}
+                    <div class="alert alert-warning show fade" role="alert">
+                        {{ form.errors }}}
+                    </div>
+                {% endif %}
                 <form action="#" method="post" class="mt-3">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
