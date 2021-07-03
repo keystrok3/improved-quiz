@@ -1,6 +1,6 @@
 
 from . import auth
-from exceptions import ValidationError
+from .exceptions import ValidationError
 
 @auth.errorhandler(ValidationError)
 def validation_error(e):
