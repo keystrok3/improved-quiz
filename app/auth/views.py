@@ -1,6 +1,6 @@
 ''' Authentication Routes '''
 from app import db
-from app.models import Student, Examiner, User
+from app.models import User
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, logout_user, current_user
 from .forms import RegisterForm, LoginForm
@@ -28,37 +28,10 @@ def register():
             flash("{}".format(str(e)))
             db.session.rollback()
             return render_template('register.html', form=form)
-        
-        person = User.query.filter_by(email=user.email).first() # database id of the above user
-        
-        # check for role of user and redirect to respective role's
-        # endpoint for adding to database
-        if user.role == 'STUDENT':
-            return redirect(url_for('auth.addstudent', id=person.id))
-        elif user.role == 'EXAMINER':
-            return redirect(url_for('auth.addxaminer', id=person.id))
-        else: 
-            pass 
     else:
         return render_template('register.html', form=form)
-        
-''' create a new student from user created at /register '''
-@auth.route('/addstudent/<int:id>', methods=['POST', 'GET'])
-def addstudent(id):
-    form = LoginForm()
-    student = Student(student_user_id=id)  
-    db.session.add(student)
-    db.session.commit()
-    return redirect(url_for('index.html'))   
-
-''' create a new examiner from user created at /register '''
-@auth.route('/addexaminer/<int:id>', methods=['POST', 'GET'])
-def addexaminer(id):
-    form = LoginForm()
-    examiner = Examiner(student_user_id=id)  
-    db.session.add(examiner)
-    db.session.commit()
-    return redirect(url_for('index.html')) 
+    
+    return 'Great work!'
 
 ''' Login '''
 @auth.route('/login', methods=['GET', 'POST'])

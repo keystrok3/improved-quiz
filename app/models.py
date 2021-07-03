@@ -6,19 +6,19 @@ from flask_login import UserMixin
 """ User models """
 
 # Student Quiz Registrations Association Table
-registrations = db.Table('registrations', 
-                         db.Column('student_id', db.Integer, db.ForeignKey('students.id')), 
-                         db.Column('quiz_id', db.Integer, db.ForeignKey('quizes.id')))
+# registrations = db.Table('registrations', 
+#                          db.Column('student_id', db.Integer, db.ForeignKey('students.id')), 
+#                          db.Column('quiz_id', db.Integer, db.ForeignKey('quizes.id')))
 
 # User model
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(128), unique=True)
+    email = db.Column(db.String(128), unique=True, nullable=False)
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
     role = db.Column(db.String(64), db.CheckConstraint("role == 'STUDENT' or role == 'EXAMINER'"))
-    password_hash = db.Column(db.String(128))
+    password_hash = db.Column(db.String(128), nullable=False)
     
     @property
     def password(self):
@@ -31,30 +31,30 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-# Student model
-class Student(User):
-    __tablename__ = "students"
-    id = db.Column(db.Integer, primary_key=True)
-    student_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    quizes = db.relationship('Quiz', 
-                            secondary=registrations,
-                            backref=db.backref('students', lazy='dynamic'),
-                            lazy='dynamic')
+# # Student model
+# class Student(User):
+#     __tablename__ = "students"
+#     id = db.Column(db.Integer, primary_key=True)
+#     student_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     quizes = db.relationship('Quiz', 
+#                             secondary=registrations,
+#                             backref=db.backref('students', lazy='dynamic'),
+#                             lazy='dynamic')
     
 
-# Examiner model
-class Examiner(User):
-    __tablename__ = "examiners"
-    id = db.Column(db.Integer, primary_key=True)
-    examiner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    examiner_quizes = db.relationship('Quiz', backref='examiner')
+# # Examiner model
+# class Examiner(User):
+#     __tablename__ = "examiners"
+#     id = db.Column(db.Integer, primary_key=True)
+#     examiner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+#     examiner_quizes = db.relationship('Quiz', backref='examiner')
     
 # Quizes
 class Quiz(db.Model):
     __tablename__ = "quizes"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64))
-    examiner_id = db.Column(db.Integer, db.ForeignKey('examiners.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     questions = db.relationship('Question', backref='quiz')
     
     
@@ -75,10 +75,15 @@ class Question(db.Model):
 class StudentSolutions(db.Model):
     __tablename__ = 'studentsolutions'
     id = db.Column(db.Integer, primary_key=True)
-    student_id = db.Column(db.Integer, db.ForeignKey('students.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     solution = db.Column(db.String(64))
     
+class Registrations(db.Model):
+    __tablename__ = 'registrations'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+    quiz_id = db.Column(db.Integer, db.ForeignKey('quizes.id'))
 
 # User loader callback
 @login_manager.user_loader
