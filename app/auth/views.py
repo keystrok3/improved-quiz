@@ -49,7 +49,7 @@ def addstudent(id):
     student = Student(student_user_id=id)  
     db.session.add(student)
     db.session.commit()
-    return render_template('index.html', form=form)  
+    return redirect(url_for('index.html'))   
 
 ''' create a new examiner from user created at /register '''
 @auth.route('/addexaminer/<int:id>', methods=['POST', 'GET'])
@@ -58,7 +58,7 @@ def addexaminer(id):
     examiner = Examiner(student_user_id=id)  
     db.session.add(examiner)
     db.session.commit()
-    return render_template('index.html', form=form) 
+    return redirect(url_for('index.html')) 
 
 ''' Login '''
 @auth.route('/login', methods=['GET', 'POST'])
