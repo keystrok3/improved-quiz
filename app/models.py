@@ -1,8 +1,7 @@
-from app import create_app, db
+from app import create_app, db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from flask_login import UserMixin
-from . import login_manager
 
 """ User models """
 
@@ -11,15 +10,14 @@ registrations = db.Table('registrations',
                          db.Column('student_id', db.Integer, db.ForeignKey('students.id')), 
                          db.Column('quiz_id', db.Integer, db.ForeignKey('quizes.id')))
 
-
-# Abstract User model --- No table
+# User model
 class User(UserMixin, db.Model):
     __tablename__ = "users"
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(128), unique=True)
     fname = db.Column(db.String(64))
     lname = db.Column(db.String(64))
-    role = db.Column(db.String(64), db.CheckConstraint("role == 'student' or role == 'examiner'"))
+    role = db.Column(db.String(64), db.CheckConstraint("role == 'STUDENT' or role == 'EXAMINER'"))
     password_hash = db.Column(db.String(128))
     
     @property
@@ -86,7 +84,6 @@ class StudentSolutions(db.Model):
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
-    
 
 app = create_app('development')
 app.app_context().push()
