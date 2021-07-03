@@ -18,7 +18,18 @@
         <div class="row">
             <div class="col"></div>
             <div class="col">
-                <form action="#" method="post">
+                {% for message in get_flashed_messages() %}
+                    <div class="alert alert-warning show fade" role="alert">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+                {% if form.errors %}
+                    <div class="alert alert-warning show fade" role="alert">
+                        {{ form.errors}}}
+                    </div>
+                {% endif %}
+                <form action="{{ url_for('auth.login') }}" method="post">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="form-group">
                         {{ form.email(class_="form-control", id="emailfield", placeholder="Email") }}
