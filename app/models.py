@@ -30,24 +30,6 @@ class User(UserMixin, db.Model):
         
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
-
-# # Student model
-# class Student(User):
-#     __tablename__ = "students"
-#     id = db.Column(db.Integer, primary_key=True)
-#     student_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-#     quizes = db.relationship('Quiz', 
-#                             secondary=registrations,
-#                             backref=db.backref('students', lazy='dynamic'),
-#                             lazy='dynamic')
-    
-
-# # Examiner model
-# class Examiner(User):
-#     __tablename__ = "examiners"
-#     id = db.Column(db.Integer, primary_key=True)
-#     examiner_user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-#     examiner_quizes = db.relationship('Quiz', backref='examiner')
     
 # Quizes
 class Quiz(db.Model):
@@ -56,6 +38,8 @@ class Quiz(db.Model):
     name = db.Column(db.String(64))
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     questions = db.relationship('Question', backref='quiz')
+    students = db.relationship('Student', backref='students')
+    
     
     
 # Questions
