@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %} Quizer - Register {% endblock %} 
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+
+{% block navbar %}
+    <div class="container">
+        {{ super() }}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="{{ url_for('examiner.examinerhome') }}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link">Quizes</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    {{ super() }}
+    <div class="row">
+        <div class="col">
+                <div class="list-group" >
+                    {% for quiz in quizes %}
+                        <div style="background-color: #495158;" class="list-group-item text-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ quiz.name }}</h5>
+                                <small>3 days ago</small>
+                            </div>
+                            <hr>
+                            <div>
+                                <form action="{{ url_for('examiner.onequiz', id=quiz.id) }}" method="get">
+                                    <button type="submit" class="btn btn-outline-light">Go To Quiz</button>
+                                </form>
+                            </div>
+                        </div>  
+                    {% endfor %}
+                </div>
+        </div>
+        <div class="col"></div>
+    </div>
+{% endblock %}

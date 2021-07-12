@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %} Quizer - Register {% endblock %} 
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+
+{% block navbar %}
+    <div class="container">
+        {{ super() }}
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a href="{{ url_for('examiner.examinerhome') }}" class="nav-link">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ url_for('examiner.quizlist') }}" class="nav-link">Quizes</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div class="container text-light">
+        {{ super() }}
+        <div class="row">
+            <div class="col">
+                <div class="page-header"><h2>{{ quiz.name }}</h2></div>
+                <div class="questions">
+                    {% for question in questions %}
+                        <div style="background-color: #495158;" data-toggle="list"
+                                    class="list-group-item list-group-item-action text-light">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ question.detail }}</h5>
+                            </div>
+                            <p class="mb-1">question.option1</p>
+                            <p class="mb-1">question.option2</p>
+                            <p class="mb-1">question.option3</p>
+                            <p class="mb-1">question.option4</p>
+                            <hr>
+                            <div><button class="btn btn-outline-light">Edit</button></div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div class="col">
+                <form action="" method="get">
+                    <div class="form-group">
+                        <input class="form-control" type="search" placeholder="Add Student">
+                    </div>
+                    <button class="btn btn-outline-light" type="submit">Add Student</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
