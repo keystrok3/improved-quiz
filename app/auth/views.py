@@ -4,7 +4,7 @@ from app.models import User
 from flask import render_template, url_for, flash, redirect
 from flask_login import login_user, logout_user, current_user
 from .forms import RegisterForm, LoginForm
-from . import auth, views
+from . import auth
 
 
 
@@ -31,7 +31,7 @@ def register():
     else:
         return render_template('register.html', form=form)
     
-    return 'Great work!'
+    return redirect(url_for('main.index'))
 
 ''' Login '''
 @auth.route('/login', methods=['GET', 'POST'])
@@ -46,10 +46,14 @@ def login():
         # verify provided creadentials
         if user is not None and user.verify_password(user_password):
             login_user(user)
+        
+        if current_user.role == 'EXAMINER':
+            return redirect(url_for('examiner.examinerhome'))
+            
     else:
         return redirect(url_for('index.html'))
     
-    return 'Great, {}!'.format(current_user.fname)
+    return 'Great!'
 
 @auth.route('/logout')
 def logout():
