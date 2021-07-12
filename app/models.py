@@ -5,11 +5,6 @@ from flask_login import UserMixin
 
 """ User models """
 
-# Student Quiz Registrations Association Table
-# registrations = db.Table('registrations', 
-#                          db.Column('student_id', db.Integer, db.ForeignKey('students.id')), 
-#                          db.Column('quiz_id', db.Integer, db.ForeignKey('quizes.id')))
-
 # User model
 class User(UserMixin, db.Model):
     __tablename__ = "users"
@@ -35,11 +30,11 @@ class User(UserMixin, db.Model):
 class Quiz(db.Model):
     __tablename__ = "quizes"
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(64))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    questions = db.relationship('Question', backref='quiz')
-    students = db.relationship('Student', backref='students')
-    
+    name = db.Column(db.String(64), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    time = db.Column(db.Time, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    questions = db.relationship('Question', backref='quiz')    
     
     
 # Questions
