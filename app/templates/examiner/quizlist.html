@@ -37,7 +37,7 @@
                             </div>
                             <hr>
                             <div>
-                                <form action="{{ url_for('examiner.onequiz', id=quiz.id) }}" method="get">
+                                <form action="{{ url_for('examiner.onequiz', id=quiz.id, qid=1) }}" method="get">
                                     <button type="submit" class="btn btn-outline-light">Go To Quiz</button>
                                 </form>
                             </div>
