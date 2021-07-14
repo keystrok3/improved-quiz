@@ -28,29 +28,42 @@
     <div class="container text-light">
         {{ super() }}
         <div class="row">
-            <div class="col-8">
+            <div class="col">
                 <div class="row">
                     <div class="col">
                         <div class="page-header"><h2>{{ quiz.name }}</h2></div>
-                        <div class="questions">
-                            {% for question in questions %}
-                                <div style="background-color: #495158;" data-toggle="list"
-                                            class="list-group-item list-group-item-action text-light">
+                        <div class="questions d-flex flex-column justify-content-center align-items-center">
+                            {% for page in pagination.items %}
+                                <div data-toggle="list"
+                                            class="list-group-item list-group-item-action text-light"
+                                            style="background-color: #495158;">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h5 class="mb-1">{{ question.detail }}</h5>
+                                        <h5 class="mb-1">{{ page.detail }}</h5>
                                     </div>
-                                    <p class="mb-1">{{ question.option1 }}</p>
-                                    <p class="mb-1">{{ question.option2 }}</p>
-                                    <p class="mb-1">{{ question.option3 }}</p>
-                                    <p class="mb-1">{{ question.option4 }}</p>
-                                    <p class="mb-1">Solution: {{ question.correct_option }}</p>
-                                    <hr>
-                                    <div><button class="btn btn-outline-light">Edit</button></div>
+                                    <p class="mb-1">{{ page.option1 }}</p>
+                                    <p class="mb-1">{{ page.option2 }}</p>
+                                    <p class="mb-1">{{ page.option3 }}</p>
+                                    <p class="mb-1">{{ page.option4 }}</p>
+                                    <p class="mb-1">Solution: {{ page.correct_option }}</p> 
+                                    <hr>                                
                                 </div>
+                                <nav class="mt-3">
+                                    <ul class="pagination" style="background-color: #495158;">
+                                        {% for page in pagination.iter_pages() %}
+                                            {% if page %}
+                                                <li 
+                                                class="page-item"><a href="{{ url_for('.onequiz', id=quiz.id, qid=page)}}" class="page-link">{{ page }}</a></li>
+                                            {% else %}
+                                                ...
+                                            {% endif %}
+                                        {% endfor %}
+                                    </ul>   
+                                </nav>
                             {% endfor %}
                         </div>
                     </div>
                     <div class="col">
+                        <h2 class="page-header">Add Question</h2>
                         {% for message in get_flashed_messages() %}
                             <div class="alert alert-warning show fade" role="alert">
                                 {{ message }}
@@ -62,7 +75,7 @@
                                 {{ form.errors}}}
                             </div>
                         {% endif %}
-                        <form action="{{ url_for('examiner.addquestion', quiz_id=quiz.id) }}" method="post">
+                        <form id="form-addquestion" action="{{ url_for('examiner.addquestion', quiz_id=quiz.id) }}" method="post">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                             <div class="form-group">
                                 {{ form.detail(class_="form-control", id="questionfield", placeholder="Question") }}
@@ -91,26 +104,34 @@
                                 {{ form.correct_option(class_="form-control", placeholder="Solution") }}
                             </div>
                             <div class="form-group">
-                                {{ form.submit(class_="btn btn-outline-light") }}
+                                <!-- {{ form.submit(class_="btn btn-outline-light") }} -->
+                                <button form="form-addquestion" class="btn btn-outline-light" type="submit">Add</button>
                             </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <div class="col-4">
-                <form action="" method="get">
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col">
+                <form id="students" action="{{ url_for('examiner.registerstudents', id=quiz.id)}}" method="post">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     {% for student in students %}
                     <div class="form-group">
                         <div class="form-check">
-                            <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
+                            <input class="form-check-input" type="checkbox" name="student" value="{{ student.id }}" id="defaultCheck1">
                             <label class="form-check-label" for="defaultCheck1">
                             {{ student.fname }} {{ student.lname }}
                             </label>
                         </div>
                     </div>
                     {% endfor %}
-                    <button class="btn btn-outline-light" type="submit">Add Students</button>
+                    <button form="students" class="btn btn-outline-light" type="submit">Add Students</button>
                 </form>
+                
             </div>
+            <div class="col"></div>
         </div>
     </div>
 {% endblock %}
