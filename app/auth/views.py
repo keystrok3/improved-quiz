@@ -51,7 +51,7 @@ def login():
             return redirect(url_for('examiner.examinerhome'))
             
     else:
-        return redirect(url_for('index.html'))
+        return redirect(url_for('main.index'))
     
     return 'Great!'
 
