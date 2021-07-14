@@ -1,8 +1,8 @@
 ''' Routes and View Functions for The Examiner user's functionalities'''
 from app import db
-from app.models import Quiz, Question, User
+from app.models import Quiz, Question, User, Registrations
 from datetime import date, time
-from flask import flash, render_template, url_for, redirect, request
+from flask import flash, render_template, url_for, redirect, request, jsonify
 from flask_login import login_required, current_user
 from . import examiner
 from .forms import QuestionForm
@@ -21,14 +21,25 @@ def quizlist():
 
 
 # specific quiz
-@examiner.route('/onequiz/<int:id>')
+@examiner.route('/onequiz/<int:id>/<int:qid>')
 @login_required
-def onequiz(id):
+def onequiz(id, qid):
     form = QuestionForm()
-    questions = Question.query.filter_by(quiz_id=id).all()
-    quiz = Quiz.query.filter_by(id=id).first()
-    students = User.query.filter_by(role='STUDENT').all()
-    return render_template('examiner/quiz_n.html', form=form, questions=questions, quiz=quiz, students=students)
+    page = request.args.get('qid')
+    quiz = Quiz.query.filter_by(id=id, user_id=current_user.id).first()
+    
+    pagination = Question.query.paginate(page=qid, per_page=1, error_out=False)
+    
+    student_users = User.query.filter_by(role='STUDENT').all()  # all students
+    
+    reg_students = Registrations.query.filter_by(quiz_id=id).all()   # list of students registered for this quiz
+    
+    registered = [r.user_id for r in reg_students]  # list of registered student's user id's
+    
+    students = filter(lambda s: s.id not in registered, student_users)  # filter out the students not registered
+
+    return render_template('examiner/quiz_n.html', form=form, pagination=pagination, 
+                           quiz=quiz, students=list(students))
 
 # Add new quiz
 @examiner.route('/addquiz', methods=['POST', 'GET'])
@@ -80,8 +91,32 @@ def addquestion(quiz_id):
     else:
         flash(form.errors['correct_option'])
     
-    return redirect(url_for('examiner.onequiz', id=quiz_id))
+    return redirect(url_for('examiner.onequiz', id=quiz_id, qid=1))
 
+
+@examiner.route('/registerstudents/<int:id>', methods=['POST', 'GET'])
+@login_required
+def registerstudents(id):
+    
+    student_dets = request.form.getlist('student')  # add all students selected to be added to table
+    
+    students = []
+    
+    for s in student_dets:
+        registration = Registrations()
+        
+        registration.user_id = int(s)
+        registration.quiz_id = id
+        
+        students.append(registration)
+    
+    try:
+        db.session.add_all(students)
+        db.session.commit()
+        print('success')
+    except Exception as e:
+        print(str(e))
+    return redirect(url_for('examiner.onequiz', id=id, qid=1))
     
     
 
