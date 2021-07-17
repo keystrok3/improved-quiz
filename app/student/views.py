@@ -42,8 +42,22 @@ def getquiz(id, qn_id):
 @login_required
 def addsolution(qn_id):
     if request.method == 'POST':
+        quiz_id = session.get('quiz_id')
         student_solution = request.form.get('option')
-        solution = StudentSolutions(user_id=current_user.id, question_id=qn_id, solution=student_solution)
+        
+        
+        question = Question.query.filter_by(id=qn_id).first()
+        correct_ans = question.correct_option
+        
+        # Check if solution is correct and set 
+        # boolean to a variable to be sent to db
+        iscorrect = None
+        if student_solution == correct_ans:
+            iscorrect = True
+        else:
+            iscorrect = False
+        
+        solution = StudentSolutions(user_id=current_user.id, question_id=qn_id, solution=student_solution, correct=iscorrect)
         
         try:
             db.session.add(solution)
@@ -53,5 +67,4 @@ def addsolution(qn_id):
             print('{}'.format(str(e)))    
             db.session.rollback()
     
-    quiz_id = session.get('quiz_id')
     return redirect(url_for('student.getquiz', id=quiz_id, qn_id=qn_id))
