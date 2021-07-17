@@ -1,7 +1,9 @@
-__pycache__/
-venv/
-data.sqlite
+*pyc
+*.ini
+/migrations
 app/static/css
 app/static/js
 app/static/jquery-3.5.1.js
-*.pyc
+__pycache__/
+venv/
+data.sqlite
