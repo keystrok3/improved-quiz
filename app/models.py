@@ -57,6 +57,7 @@ class StudentSolutions(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     question_id = db.Column(db.Integer, db.ForeignKey('questions.id'))
     solution = db.Column(db.String(64))
+    correct = db.Column(db.Boolean())
     
 class Registrations(db.Model):
     __tablename__ = 'registrations'
