@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %} Quizer - Register {% endblock %} 
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+
+<div class="container">
+    {% block content %}
+        {{ super() }}
+        <div class="row">
+            
+            <div class="col">
+                <h2 class="page-header text-light">Up Coming Quizes</h2>
+                <table class="table" style="background-color: #343a40; color: #fff;">
+                    {% for quiz in quizes %}
+                        <tr style="border-bottom: 1px solid #262c33;" class="d-flex flex-row justify-content-between align-items-center">
+                            <td style="border: none; color: #fff;">{{ quiz.name }}</td>
+                            <td style="border: none; color: #fff;">
+                               {{ moment(quiz.date).format('LL') }}
+                            </td>
+                            <td style="border: none; color: #fff;">
+                                
+                                <form action="{{ url_for('student.getquiz', id=quiz.id, qn_id=1) }}" method="get">
+                                    <button type="submit" class="btn btn-outline-light">
+                                        START
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="col"></div>
+        </div>
+    {% endblock %}
+</div>

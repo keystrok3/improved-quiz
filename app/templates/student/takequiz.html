@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %} Quizer - Register {% endblock %} 
+
+{% block head %}
+    {{ super() }}
+{% endblock %}
+
+
+
+{% block navbar %}
+    {{ super() }}
+{% endblock %}
+
+<div class="container">
+    {% block content %}
+        {{ super() }}
+        <div class="row d-flex align-items-center justify-content-center">
+            {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning show fade" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+            <div class="card w-50 text-white mb-3" style="background-color: #41484e;">
+                <div class="card-header">
+                    <h3 class="text-center">{{ quiz_name}}</h3>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    {% for item in pagination.items %}
+                    <h4 class="card-title text-center">{{ item.detail }}</h4>
+                    <form class="mt-3 mb-3" 
+                            action="{{ url_for('student.addsolution', qn_id=item.id) }}" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="option" id="exampleRadios1" value="{{ item.option1 }}">
+                            <label class="form-check-label card-text" for="exampleRadios1">
+                            {{ item.option1 }}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="option" id="exampleRadios2" value="{{ item.option2 }}">
+                            <label class="form-check-label" for="exampleRadios2">
+                            {{ item.option2 }}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="option" id="exampleRadios3" value="{{ item.option3 }}">
+                            <label class="form-check-label" for="exampleRadios3">
+                            {{ item.option3 }}
+                            </label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="option" id="exampleRadios4" value="{{ item.option4 }}">
+                            <label class="form-check-label" for="exampleRadios4">
+                            {{ item.option4 }}
+                            </label>
+                        </div>
+                        <div class="form-group mt-2">
+                            <button class="btn btn-danger w-100" type="submit">Submit Solution</button>
+                        </div>
+                    </form>
+                    {% if not pagination.has_next %}
+                        <button class="btn btn-outline-light w-100" disabled type="submit">Next</button>
+                    {% else %}
+                        <form action="{{ url_for('student.getquiz', id=item.quiz_id, qn_id=pagination.next_num) }}" method="get">
+                            <button class="btn btn-outline-light w-100" type="submit">Next</button>
+                        </form>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="card-footer text-muted text-center">
+                  2 days ago
+                </div>
+              </div>
+        </div>
+    {% endblock %}
+</div>
