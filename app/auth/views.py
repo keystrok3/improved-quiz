@@ -49,12 +49,12 @@ def login():
         
         if current_user.role == 'EXAMINER':
             return redirect(url_for('examiner.examinerhome'))
-            
+        elif current_user.role == 'STUDENT':
+            return redirect(url_for('student.studenthome'))
     else:
         return redirect(url_for('main.index'))
     
-    return 'Great!'
-
+# log out route
 @auth.route('/logout')
 def logout():
     form = LoginForm()
